@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ event.title }} — EventHub{% endblock %}
+{% block body %}
+<main>
+    <a href="{{ path('event_list') }}" style="color:var(--muted);font-size:0.85rem;display:inline-flex;align-items:center;gap:0.4rem;margin-bottom:1.5rem">← Retour aux événements</a>
+    
+    <div class="event-detail">
+        <div>
+            {% if event.image %}
+                <img class="event-detail-img" src="{{ asset('uploads/events/' ~ event.image) }}" alt="{{ event.title }}">
+            {% else %}
+                <div class="event-detail-img" style="background:linear-gradient(135deg,#1A1A2E,#2D2D4E);display:flex;align-items:center;justify-content:center;font-size:5rem">🎭</div>
+            {% endif %}
+            <h1 style="font-size:1.8rem;margin:1.5rem 0 0.8rem">{{ event.title }}</h1>
+            <p style="color:var(--muted);line-height:1.7">{{ event.description }}</p>
+        </div>
+        
+        <div>
+            <div class="info-card">
+                <h3 style="margin-bottom:1.2rem">Informations</h3>
+                <div style="display:flex;flex-direction:column;gap:0.8rem;margin-bottom:1.5rem">
+                    <div style="display:flex;gap:0.8rem;font-size:0.9rem">
+                        <span style="color:var(--muted)">📅</span>
+                        <span>{{ event.date|date('d/m/Y à H:i') }}</span>
+                    </div>
+                    <div style="display:flex;gap:0.8rem;font-size:0.9rem">
+                        <span style="color:var(--muted)">📍</span>
+                        <span>{{ event.location }}</span>
+                    </div>
+                    <div style="display:flex;gap:0.8rem;font-size:0.9rem">
+                        <span style="color:var(--muted)">🎟</span>
+                        {% if event.availableSeats > 0 %}
+                            <span class="badge badge-success">{{ event.availableSeats }} / {{ event.seats }} places disponibles</span>
+                        {% else %}
+                            <span class="badge badge-danger">Événement complet</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if event.availableSeats > 0 %}
+                    {% if is_granted('ROLE_USER') %}
+                        <a href="{{ path('event_reserve', {id: event.id}) }}" class="btn btn-primary" style="width:100%;justify-content:center">
+                            Réserver ma place
+                        </a>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="btn btn-primary" style="width:100%;justify-content:center">
+                            Se connecter pour réserver
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <button class="btn" style="width:100%;justify-content:center;background:rgba(255,255,255,0.05);color:var(--muted);cursor:not-allowed" disabled>
+                        Complet
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

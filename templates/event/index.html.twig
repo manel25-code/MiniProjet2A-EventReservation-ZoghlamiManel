@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+{% block title %}Événements — EventHub{% endblock %}
+{% block body %}
+<div class="hero">
+    <h1>Découvrez les <span class="gradient-text">événements</span><br>qui vous inspirent</h1>
+    <p>Réservez votre place en quelques secondes. Sécurisé, simple, rapide.</p>
+    {% if not is_granted('ROLE_USER') %}
+        <a href="{{ path('user_register') }}" class="btn btn-primary">Commencer gratuitement →</a>
+    {% endif %}
+</div>
+
+<main>
+    {% if events is empty %}
+        <div style="text-align:center;padding:4rem;color:var(--muted)">
+            <div style="font-size:3rem;margin-bottom:1rem">🎪</div>
+            <p>Aucun événement disponible pour le moment.</p>
+        </div>
+    {% else %}
+        <div class="events-grid">
+            {% for event in events %}
+            <a href="{{ path('event_show', {id: event.id}) }}" class="card">
+                {% if event.image %}
+                    <img class="card-img" src="{{ asset('uploads/events/' ~ event.image) }}" alt="{{ event.title }}">
+                {% else %}
+                    <div class="card-img-placeholder">🎭</div>
+                {% endif %}
+                <div class="card-body">
+                    <div class="card-meta">
+                        <span>📅 {{ event.date|date('d/m/Y à H:i') }}</span>
+                        <span>📍 {{ event.location }}</span>
+                    </div>
+                    <div class="card-title">{{ event.title }}</div>
+                    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem">{{ event.description|slice(0,100) }}...</p>
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        {% if event.availableSeats > 0 %}
+                            <span class="badge badge-success">{{ event.availableSeats }} places</span>
+                        {% else %}
+                            <span class="badge badge-danger">Complet</span>
+                        {% endif %}
+                        <span class="btn btn-outline btn-sm">Voir →</span>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+</main>
+{% endblock %}

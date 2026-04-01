@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+{% block title %}Réservation confirmée !{% endblock %}
+{% block body %}
+<main style="text-align:center;padding:4rem 1rem">
+    <div style="font-size:5rem;margin-bottom:1.5rem">🎉</div>
+    <h1 style="font-size:2rem;margin-bottom:1rem">Réservation confirmée !</h1>
+    <p style="color:var(--muted);margin-bottom:2rem">
+        Bonjour <strong style="color:var(--text)">{{ reservation.name }}</strong>, votre place pour<br>
+        <strong style="color:var(--text)">{{ reservation.event.title }}</strong> est réservée.
+    </p>
+    <div style="display:inline-grid;text-align:left;gap:0.6rem;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:2rem;min-width:300px">
+        <div style="font-size:0.85rem"><span style="color:var(--muted)">📅 Date :</span> {{ reservation.event.date|date('d/m/Y à H:i') }}</div>
+        <div style="font-size:0.85rem"><span style="color:var(--muted)">📍 Lieu :</span> {{ reservation.event.location }}</div>
+        <div style="font-size:0.85rem"><span style="color:var(--muted)">📧 Email :</span> {{ reservation.email }}</div>
+        <div style="font-size:0.85rem"><span style="color:var(--muted)">📞 Tél :</span> {{ reservation.phone }}</div>
+    </div>
+    <br>
+    <a href="{{ path('event_list') }}" class="btn btn-primary">Voir d'autres événements</a>
+</main>
+{% endblock %}
