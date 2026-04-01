@@ -1,0 +1,48 @@
+{% extends 'admin/base_admin.html.twig' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Tableau de bord</h1>
+    <p style="color:var(--muted);font-size:0.88rem">Bienvenue, {{ app.user.username }}</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-number">{{ totalEvents }}</div>
+        <div class="stat-label">Événements créés</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ totalReservations }}</div>
+        <div class="stat-label">Réservations totales</div>
+    </div>
+</div>
+
+<div class="card">
+    <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <h3>Événements récents</h3>
+        <a href="{{ path('admin_event_new') }}" class="btn btn-primary btn-sm">+ Nouvel événement</a>
+    </div>
+    <table>
+        <thead><tr><th>Titre</th><th>Date</th><th>Places dispo</th><th>Réservations</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for event in events|slice(0,5) %}
+            <tr>
+                <td><strong>{{ event.title }}</strong></td>
+                <td style="color:var(--muted)">{{ event.date|date('d/m/Y') }}</td>
+                <td>
+                    {% if event.availableSeats > 0 %}
+                        <span class="badge badge-success">{{ event.availableSeats }}</span>
+                    {% else %}
+                        <span class="badge badge-danger">Complet</span>
+                    {% endif %}
+                </td>
+                <td>{{ event.reservations|length }}</td>
+                <td>
+                    <a href="{{ path('admin_event_reservations', {id: event.id}) }}" class="btn btn-outline btn-sm">Voir réservations</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

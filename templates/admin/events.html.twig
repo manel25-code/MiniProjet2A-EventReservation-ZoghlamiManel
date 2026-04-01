@@ -1,0 +1,33 @@
+{% extends 'admin/base_admin.html.twig' %}
+{% block title %}Événements{% endblock %}
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start">
+    <div><h1>Événements</h1></div>
+    <a href="{{ path('admin_event_new') }}" class="btn btn-primary">+ Nouvel événement</a>
+</div>
+
+<div class="card">
+    <table>
+        <thead><tr><th>Titre</th><th>Date</th><th>Lieu</th><th>Places</th><th>Réservations</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for event in events %}
+            <tr>
+                <td><strong>{{ event.title }}</strong></td>
+                <td style="color:var(--muted)">{{ event.date|date('d/m/Y H:i') }}</td>
+                <td style="color:var(--muted)">{{ event.location }}</td>
+                <td>{{ event.availableSeats }} / {{ event.seats }}</td>
+                <td>{{ event.reservations|length }}</td>
+                <td style="display:flex;gap:0.4rem">
+                    <a href="{{ path('admin_event_edit', {id: event.id}) }}" class="btn btn-outline btn-sm">✏ Modifier</a>
+                    <a href="{{ path('admin_event_reservations', {id: event.id}) }}" class="btn btn-outline btn-sm">📋 Réservations</a>
+                    <form method="post" action="{{ path('admin_event_delete', {id: event.id}) }}" onsubmit="return confirm('Supprimer cet événement ?')">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+                        <button class="btn btn-danger btn-sm">🗑</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
