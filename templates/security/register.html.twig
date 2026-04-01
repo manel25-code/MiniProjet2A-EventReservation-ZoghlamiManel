@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+{% block title %}Inscription{% endblock %}
+{% block body %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h1 class="auth-title">Créer un compte</h1>
+        <p class="auth-subtitle">Rejoignez EventHub et réservez vos événements</p>
+
+        <form method="post">
+            <div class="form-group">
+                <label>Nom d'utilisateur</label>
+                <input type="text" name="username" class="form-control" placeholder="Votre prénom nom" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" class="form-control" placeholder="votre@email.com" required>
+            </div>
+            <div class="form-group">
+                <label>Mot de passe</label>
+                <input type="password" name="password" class="form-control" placeholder="8 caractères minimum" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:0.85rem">
+                Créer mon compte
+            </button>
+        </form>
+
+        <p style="text-align:center;margin-top:1.5rem;font-size:0.85rem;color:var(--muted)">
+            Déjà un compte ? <a href="{{ path('app_login') }}" style="color:#A78BFA">Se connecter</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
