@@ -18,7 +18,15 @@ class AuthApiController extends AbstractController
         private JWTTokenManagerInterface $jwtManager,
         private RefreshTokenManagerInterface $refreshManager
     ) {}
-
+#[Route('/login/options', methods: ['POST'])]
+public function loginOptions(PasskeyAuthService $passkeyService): JsonResponse
+{
+    try {
+        return $this->json($passkeyService->getLoginOptions());
+    } catch (\Exception $e) {
+        return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+    }
+}
     #[Route('/register/options', methods: ['POST'])]
     public function registerOptions(
         Request $request,
@@ -44,82 +52,66 @@ class AuthApiController extends AbstractController
     }
 
     #[Route('/register/verify', methods: ['POST'])]
-    public function registerVerify(
-        Request $request,
-        PasskeyAuthService $passkeyService
-    ): JsonResponse {
-        $data = json_decode($request->getContent(), true);
-        $email = $data['email'] ?? null;
-        $credential = $data['credential'] ?? null;
+public function registerVerify(
+    Request $request,
+    PasskeyAuthService $passkeyService
+): JsonResponse {
+    $data = json_decode($request->getContent(), true);
+    $email = $data['email'] ?? null;
+    $credential = $data['credential'] ?? null;
 
-        $user = $this->getDoctrine()->getRepository(User::class)
-            ->findOneBy(['email' => $email]);
+    $user = $this->getDoctrine()->getRepository(User::class)
+        ->findOneBy(['email' => $email]);
 
-        if (!$user || !$credential) {
-            return $this->json(['error' => 'Données invalides'], Response::HTTP_BAD_REQUEST);
-        }
-
-        try {
-            $passkeyService->verifyRegistration($credential, $user);
-
-            $jwt = $this->jwtManager->create($user);
-            $refresh = $this->refreshManager->createForUser($user);
-
-            return $this->json([
-                'success' => true,
-                'token' => $jwt,
-                'refresh_token' => $refresh->getRefreshToken(),
-                'user' => [
-                    'id' => $user->getId(),
-                    'email' => $user->getEmail()
-                ]
-            ]);
-        } catch (\Exception $e) {
-            return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
-        }
+    if (!$user || !$credential) {
+        return $this->json(['error' => 'Données invalides'], Response::HTTP_BAD_REQUEST);
     }
 
-    #[Route('/login/options', methods: ['POST'])]
-    public function loginOptions(PasskeyAuthService $passkeyService): JsonResponse
-    {
-        try {
-            return $this->json($passkeyService->getLoginOptions());
-        } catch (\Exception $e) {
-            return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
-        }
+    try {
+        // On passe array directement
+        $passkeyService->verifyRegistration($credential, $user);
+
+        $jwt = $this->jwtManager->create($user);
+        $refresh = $this->refreshManager->createForUser($user);
+
+        return $this->json([
+            'success' => true,
+            'token' => $jwt,
+            'refresh_token' => $refresh->getRefreshToken(),
+        ]);
+    } catch (\Exception $e) {
+        return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+    }
+}
+
+#[Route('/login/verify', methods: ['POST'])]
+public function loginVerify(
+    Request $request,
+    PasskeyAuthService $passkeyService
+): JsonResponse {
+    $data = json_decode($request->getContent(), true);
+    $credential = $data['credential'] ?? null;
+
+    if (!$credential) {
+        return $this->json(['error' => 'Credential requis'], Response::HTTP_BAD_REQUEST);
     }
 
-    #[Route('/login/verify', methods: ['POST'])]
-    public function loginVerify(
-        Request $request,
-        PasskeyAuthService $passkeyService
-    ): JsonResponse {
-        $data = json_decode($request->getContent(), true);
-        $credential = $data['credential'] ?? null;
+    try {
+        // On passe array directement
+        $user = $passkeyService->verifyLogin($credential);
 
-        if (!$credential) {
-            return $this->json(['error' => 'Credential requis'], Response::HTTP_BAD_REQUEST);
-        }
+        $jwt = $this->jwtManager->create($user);
+        $refresh = $this->refreshManager->createForUser($user);
 
-        try {
-            $user = $passkeyService->verifyLogin($credential);
-
-            $jwt = $this->jwtManager->create($user);
-            $refresh = $this->refreshManager->createForUser($user);
-
-            return $this->json([
-                'success' => true,
-                'token' => $jwt,
-                'refresh_token' => $refresh->getRefreshToken(),
-                'user' => [
-                    'id' => $user->getId(),
-                    'email' => $user->getEmail()
-                ]
-            ]);
-        } catch (\Exception $e) {
-            return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
-        }
+        return $this->json([
+            'success' => true,
+            'token' => $jwt,
+            'refresh_token' => $refresh->getRefreshToken(),
+        ]);
+    } catch (\Exception $e) {
+        return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
     }
+}
 
     #[Route('/refresh', methods: ['POST'])]
     public function refresh(): JsonResponse

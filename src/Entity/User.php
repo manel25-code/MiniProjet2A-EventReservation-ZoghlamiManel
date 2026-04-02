@@ -6,9 +6,12 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -51,7 +54,6 @@ class User
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
@@ -63,19 +65,26 @@ class User
     public function setUsername(string $username): static
     {
         $this->username = $username;
-
         return $this;
+    }
+
+    // ✅ AJOUTÉ - obligatoire par UserInterface
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
     }
 
     public function getRoles(): array
     {
-        return $this->roles;
+        $roles = $this->roles;
+        // ✅ CORRIGÉ - garantit toujours ROLE_USER
+        $roles[] = 'ROLE_USER';
+        return array_unique($roles);
     }
 
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
-
         return $this;
     }
 
@@ -87,8 +96,13 @@ class User
     public function setPassword(?string $password): static
     {
         $this->password = $password;
-
         return $this;
+    }
+
+    // ✅ AJOUTÉ - obligatoire par UserInterface
+    public function eraseCredentials(): void
+    {
+        // Vide les données sensibles temporaires si nécessaire
     }
 
     /**
@@ -105,19 +119,16 @@ class User
             $this->reservations->add($reservation);
             $reservation->setUser($this);
         }
-
         return $this;
     }
 
     public function removeReservation(Reservation $reservation): static
     {
         if ($this->reservations->removeElement($reservation)) {
-            // set the owning side to null (unless already changed)
             if ($reservation->getUser() === $this) {
                 $reservation->setUser(null);
             }
         }
-
         return $this;
     }
 }

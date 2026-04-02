@@ -27,15 +27,14 @@ private Uuid $id;
  #[ORM\Column]
  private \DateTimeImmutable $lastUsedAt;
 
- public function getCredentialSource(): PublicKeyCredentialSource
- {
- $data = json_decode($this->credentialData, true);
- return PublicKeyCredentialSource::createFromArray($data);
- }
- public function setCredentialSource(PublicKeyCredentialSource
-$source): void
- {
- $this->credentialData = json_encode($source);
- }
+ public function getCredentialRawData(): string 
+{ 
+    return $this->credentialData; 
+}
+
+public function setCredentialRawData(string $data): void 
+{ 
+    $this->credentialData = $data; 
+}
 
 }

@@ -1,0 +1,40 @@
+{% extends 'admin/base_admin.html.twig' %}
+{% block title %}Réservations — {{ event.title }}{% endblock %}
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+        <h1>Réservations</h1>
+        <p style="color:var(--muted);font-size:0.88rem">{{ event.title }}</p>
+    </div>
+    <a href="{{ path('admin_events') }}" class="btn btn-outline">← Retour</a>
+</div>
+
+<div class="card">
+    {% if event.reservations is empty %}
+        <div style="padding:3rem;text-align:center;color:var(--muted)">
+            Aucune réservation pour cet événement.
+        </div>
+    {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Téléphone</th>
+                    <th>Date réservation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in event.reservations %}
+                <tr>
+                    <td><strong>{{ reservation.name }}</strong></td>
+                    <td style="color:var(--muted)">{{ reservation.email }}</td>
+                    <td style="color:var(--muted)">{{ reservation.phone }}</td>
+                    <td style="color:var(--muted)">{{ reservation.createdAt|date('d/m/Y H:i') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}
