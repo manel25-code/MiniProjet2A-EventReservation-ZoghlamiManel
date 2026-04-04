@@ -30,7 +30,12 @@ class Reservation
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     private ?User $user = null;
+    
 
+    public function __construct()
+{
+    $this->createdAt = new \DateTimeImmutable();
+}
     public function getId(): ?int
     {
         return $this->id;

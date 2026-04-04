@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; background:#f5f5f5; margin:0; padding:0; }
+        .container { max-width:600px; margin:30px auto; background:#fff; border-radius:12px; overflow:hidden; }
+        .header { background:linear-gradient(135deg,#6C3FE8,#A78BFA); padding:2rem; text-align:center; }
+        .header h1 { color:#fff; margin:0; font-size:1.5rem; }
+        .body { padding:2rem; }
+        .info-row { display:flex; gap:0.8rem; margin-bottom:0.8rem; font-size:0.95rem; }
+        .label { color:#888; min-width:80px; }
+        .footer { background:#f9f9f9; padding:1rem 2rem; text-align:center; font-size:0.8rem; color:#aaa; }
+        .btn { display:inline-block; padding:0.8rem 2rem; background:#6C3FE8; color:#fff; border-radius:8px; text-decoration:none; margin-top:1rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>⚡ EventHub</h1>
+        <p style="color:rgba(255,255,255,0.85);margin:0.5rem 0 0">Confirmation de réservation</p>
+    </div>
+    <div class="body">
+        <p>Bonjour <strong>{{ reservation.name }}</strong>,</p>
+        <p>Votre réservation pour l'événement <strong>{{ reservation.event.title }}</strong> est confirmée !</p>
+
+        <div style="background:#f8f7ff;border-left:4px solid #6C3FE8;border-radius:8px;padding:1.2rem;margin:1.5rem 0">
+            <div class="info-row"><span class="label">📅 Date :</span> <span>{{ reservation.event.date|date('d/m/Y à H:i') }}</span></div>
+            <div class="info-row"><span class="label">📍 Lieu :</span> <span>{{ reservation.event.location }}</span></div>
+            <div class="info-row"><span class="label">📧 Email :</span> <span>{{ reservation.email }}</span></div>
+            <div class="info-row"><span class="label">📞 Tél :</span> <span>{{ reservation.phone }}</span></div>
+        </div>
+
+        <p style="color:#666">Merci de votre confiance. À bientôt !</p>
+        <p style="color:#666">L'équipe EventHub</p>
+    </div>
+    <div class="footer">
+        © 2026 EventHub — ISSAT Sousse
+    </div>
+</div>
+</body>
+</html>

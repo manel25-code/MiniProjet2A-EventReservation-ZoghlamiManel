@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin — Connexion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'DM Sans',sans-serif;background:#0D0D1A;color:#E8E8F0;min-height:100vh;display:flex;align-items:center;justify-content:center}
+        h1,h2{font-family:'Sora',sans-serif}
+        .card{background:#13131F;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:2.5rem;width:100%;max-width:420px}
+        .brand{text-align:center;margin-bottom:2rem}
+        .brand h1{font-size:1.5rem;background:linear-gradient(135deg,#6C3FE8,#A78BFA);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .brand p{color:#888899;font-size:0.85rem;margin-top:0.3rem}
+        .form-group{margin-bottom:1.2rem}
+        .form-group label{display:block;font-size:0.82rem;color:#888899;margin-bottom:0.4rem}
+        .form-control{width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#E8E8F0;font-size:0.95rem;font-family:'DM Sans',sans-serif}
+        .form-control:focus{outline:none;border-color:#6C3FE8}
+        .btn{width:100%;padding:0.85rem;background:#6C3FE8;color:#fff;border:none;border-radius:10px;font-size:0.95rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500}
+        .btn:hover{background:#4f2cb5}
+        .flash{padding:0.8rem 1rem;border-radius:8px;margin-bottom:1rem;font-size:0.88rem;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#fca5a5}
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="brand">
+        <h1>⚡ EventHub</h1>
+        <p>Espace Administrateur</p>
+    </div>
+
+    {% if error %}
+        <div class="flash">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    <form method="post" action="{{ path('admin_login') }}">
+        <div class="form-group">
+            <label>Nom d'utilisateur</label>
+            <input type="text" name="_username" class="form-control" value="{{ last_username }}" placeholder="admin" required autofocus>
+        </div>
+        <div class="form-group">
+            <label>Mot de passe</label>
+            <input type="password" name="_password" class="form-control" placeholder="••••••••" required>
+        </div>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+        <button type="submit" class="btn">Se connecter</button>
+    </form>
+</div>
+</body>
+</html>

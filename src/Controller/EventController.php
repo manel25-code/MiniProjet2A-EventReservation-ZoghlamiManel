@@ -10,6 +10,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Mailer\MailerInterface;       
+use Symfony\Component\Mime\Email;   
 
 class EventController extends AbstractController
 {
@@ -27,7 +29,7 @@ class EventController extends AbstractController
     }
 
     #[Route('/reservation/{id}', name: 'event_reserve', methods: ['GET', 'POST'])]
-    public function reserve(Event $event, Request $request, EntityManagerInterface $em): Response
+    public function reserve(Event $event, Request $request, EntityManagerInterface $em, MailerInterface $mailer): Response
     {
         if ($event->getAvailableSeats() <= 0) {
             $this->addFlash('error', 'Plus de places disponibles pour cet événement.');
@@ -44,6 +46,20 @@ class EventController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->persist($reservation);
             $em->flush();
+            try {
+                $emailMessage = (new Email())
+                    ->from($_ENV['MAILER_FROM'] ?? 'noreply@eventhub.com')
+                    ->to($reservation->getEmail())   // ← email saisi dans le formulaire
+                    ->subject('✅ Confirmation de réservation — ' . $event->getTitle())
+                    ->html(
+                        $this->renderView('email/confirmation.html.twig', [
+                            'reservation' => $reservation,
+                        ])
+                    );
+
+                $mailer->send($emailMessage);
+            } catch (\Exception $e) {
+            }
 
             $this->addFlash('success', '🎉 Réservation confirmée ! Vous recevrez une confirmation par email.');
             return $this->redirectToRoute('reservation_confirmation', ['id' => $reservation->getId()]);

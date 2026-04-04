@@ -4,10 +4,12 @@ namespace App\Entity;
 
 use App\Repository\AdminRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: AdminRepository::class)]
 #[ORM\Table(name: '`admin`')]
-class Admin
+class Admin implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -37,15 +39,17 @@ class Admin
         return $this;
     }
 
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
+    
+    // ✅ Obligatoire UserInterface
+    public function getUserIdentifier(): string { return $this->username; }
 
-    public function setPassword(string $password): static
-    {
-        $this->password = $password;
+    // ✅ Obligatoire UserInterface  
+    public function getRoles(): array { return ['ROLE_ADMIN']; }
 
-        return $this;
-    }
+    // ✅ Obligatoire PasswordAuthenticatedUserInterface
+    public function getPassword(): string { return $this->password; }
+    public function setPassword(string $password): self { $this->password = $password; return $this; }
+
+    // ✅ Obligatoire UserInterface
+    public function eraseCredentials(): void {}
 }
